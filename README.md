@@ -44,7 +44,7 @@ AI Output → Intent → Policy → Decision → Authority → Execution → Led
 
 ## Before vs after
 
-Without a control layer:
+Without a control layer
 
 ```text
 --- Without agent-firewall ---
@@ -53,7 +53,7 @@ Executing immediately...
 Result: DATABASE DELETED
 ```
 
-With `agent-firewall`:
+With `agent-firewall`
 
 ```text
 --- With agent-firewall ---
@@ -92,6 +92,7 @@ AI suggests: deploy_code
 Intent: production code deployment
 Decision: REQUIRES_APPROVAL
 Reason: production changes require approval
+
 
 --- Ledger Summary ---
 [1] delete_database -> BLOCKED
