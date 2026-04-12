@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx src/demo.ts",
     "build": "tsc",
+    "red-team": "tsx src/red-team/runRedTeam.ts",
     "start": "node dist/demo.js"
   },
   "devDependencies": {

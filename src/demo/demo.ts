@@ -14,8 +14,9 @@ interface DemoScenario {
 function printBeforeFirewall(action: RawAction): void {
   console.log("--- Without agent-firewall ---");
   console.log(`AI suggests: ${action.action}`);
-  console.log("Executing immediately...");
-  console.log("Result: DATABASE DELETED");
+  console.log("Control boundary: none");
+  console.log("Action executed immediately");
+  console.log("Result: production database deleted");
   console.log("");
 }
 

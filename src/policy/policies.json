@@ -3,13 +3,25 @@
     "id": "block-destructive-actions",
     "action": "delete_database",
     "decision": "BLOCKED",
-    "reason": "destructive actions cannot be executed without human approval"
+    "reason": "destructive actions require explicit human approval"
   },
   {
     "id": "require-approval-for-production-changes",
     "action": "deploy_code",
     "decision": "REQUIRES_APPROVAL",
-    "reason": "production changes require approval"
+    "reason": "production changes require explicit approval"
+  },
+  {
+    "id": "block-sensitive-data-export",
+    "action": "export_customer_data",
+    "decision": "BLOCKED",
+    "reason": "sensitive data export is blocked by policy"
+  },
+  {
+    "id": "block-privilege-escalation",
+    "action": "grant_admin_access",
+    "decision": "BLOCKED",
+    "reason": "privilege escalation requires explicit human authorization"
   },
   {
     "id": "allow-low-risk-operations",

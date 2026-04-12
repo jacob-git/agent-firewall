@@ -14,6 +14,14 @@ const INTENT_TEMPLATES: Record<string, IntentTemplate> = {
     category: "change_management",
     summary: "production code deployment"
   },
+  export_customer_data: {
+    category: "data_access",
+    summary: "sensitive customer data export"
+  },
+  grant_admin_access: {
+    category: "identity",
+    summary: "privilege escalation request for administrative access"
+  },
   restart_service: {
     category: "operational",
     summary: "operational restart of a production service"

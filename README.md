@@ -42,6 +42,11 @@ AI Output → Intent → Policy → Decision → Authority → Execution → Led
 - `restart_service` → `APPROVED`
 - `deploy_code` → `REQUIRES_APPROVAL`
 
+## Red-team scenarios
+
+The repository includes adversarial scenarios that test whether unsafe AI actions
+are blocked or contained before execution through the same policy and authority path.
+
 ## Before vs after
 
 Without a control layer

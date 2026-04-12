@@ -1,11 +1,19 @@
 export type ActionName =
   | "delete_database"
   | "deploy_code"
+  | "export_customer_data"
+  | "grant_admin_access"
   | "restart_service"
   | "rotate_logs"
   | (string & {});
 
-export type IntentCategory = "destructive" | "operational" | "change_management" | "unknown";
+export type IntentCategory =
+  | "change_management"
+  | "data_access"
+  | "destructive"
+  | "identity"
+  | "operational"
+  | "unknown";
 
 export interface RawAction {
   action: ActionName;
