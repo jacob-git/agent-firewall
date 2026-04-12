@@ -1,0 +1,16 @@
+{
+  "name": "agent-firewall",
+  "version": "1.0.0",
+  "description": "A firewall for AI actions. Decides if AI is allowed to execute.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsx src/demo.ts",
+    "build": "tsc",
+    "start": "node dist/demo.js"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

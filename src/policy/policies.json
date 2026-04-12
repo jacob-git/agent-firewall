@@ -1,0 +1,28 @@
+[
+  {
+    "id": "block-destructive-actions",
+    "action": "delete_database",
+    "decision": "BLOCKED",
+    "reason": "destructive actions cannot be executed without human approval"
+  },
+  {
+    "id": "require-approval-for-production-changes",
+    "action": "deploy_code",
+    "decision": "REQUIRES_APPROVAL",
+    "reason": "production changes require approval"
+  },
+  {
+    "id": "allow-low-risk-operations",
+    "action": "restart_service",
+    "minConfidence": 0.7,
+    "decision": "APPROVED",
+    "reason": "low-risk operation allowed by policy"
+  },
+  {
+    "id": "allow-routine-maintenance",
+    "action": "rotate_logs",
+    "minConfidence": 0.7,
+    "decision": "APPROVED",
+    "reason": "routine maintenance action allowed by policy"
+  }
+]
