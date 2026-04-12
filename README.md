@@ -12,9 +12,14 @@ Most stacks move too quickly from model output to tool execution.
 
 ## Why this matters now
 
-AI agents are becoming more autonomous.
-Systems are increasingly connecting AI directly to APIs and production systems.
-What is still missing in many stacks is runtime control.
+AI systems are no longer just generating text. They are being connected to APIs, infrastructure, and production workflows.
+
+This shifts the risk:
+the problem is no longer just incorrect responses, but incorrect actions.
+
+Most current architectures allow AI to move too quickly from output to execution.
+
+agent-firewall demonstrates a simple control boundary that can sit between AI intent and real-world side effects.
 
 ## Threat model
 
