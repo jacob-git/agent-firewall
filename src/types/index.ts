@@ -1,7 +1,33 @@
-export type { Decision } from "../core/decision.js";
-export { DecisionType } from "../core/decision.js";
-export type { ActionName, Intent, IntentCategory, RawAction } from "../core/intent.js";
-export type { ExecutionResult, ExecutionStatus } from "../execution/executor.js";
-export { ExecutionStatus as ExecutionResultStatus } from "../execution/executor.js";
-export type { LedgerEntry, ExecutionLedgerRecord } from "../ledger/ledger.js";
-export type { PolicyRule } from "../policy/policyRule.js";
+export type Decision = "APPROVED" | "REQUIRES_APPROVAL" | "BLOCKED";
+
+export type RiskLevel = "low" | "medium" | "high" | "critical";
+
+export interface EvaluationRule {
+  id: string;
+  pattern: RegExp;
+  decision: Decision;
+  reason: string;
+  risk: RiskLevel;
+}
+
+export interface PolicyRuleInput {
+  id: string;
+  pattern: string;
+  decision: Decision;
+  reason: string;
+  risk: RiskLevel;
+}
+
+export interface EvaluationResult {
+  command: string;
+  normalizedCommand: string;
+  decision: Decision;
+  risk: RiskLevel;
+  reason: string;
+  matchedRuleId: string;
+  timestamp: string;
+}
+
+export interface EngineOptions {
+  policyRules?: EvaluationRule[];
+}

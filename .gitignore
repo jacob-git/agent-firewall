@@ -1,4 +1,5 @@
 node_modules/
 dist/
+.agent-firewall/
 *.log
 .DS_Store

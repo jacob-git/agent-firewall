@@ -1,13 +1,57 @@
 {
   "name": "agent-firewall",
-  "version": "1.0.0",
-  "description": "A firewall for AI actions. Decides if AI is allowed to execute.",
+  "version": "0.1.0",
+  "description": "CLI policy boundary for AI-generated shell commands.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./cli": {
+      "types": "./dist/cli/index.d.ts",
+      "import": "./dist/cli/index.js"
+    }
+  },
   "license": "MIT",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "agent-firewall": "dist/cli/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jacob-git/agent-firewall.git"
+  },
+  "homepage": "https://github.com/jacob-git/agent-firewall#readme",
+  "bugs": {
+    "url": "https://github.com/jacob-git/agent-firewall/issues"
+  },
+  "keywords": [
+    "cli",
+    "security",
+    "shell",
+    "policy",
+    "agent",
+    "ai",
+    "command",
+    "guardrail"
+  ],
   "scripts": {
-    "dev": "tsx src/demo.ts",
-    "build": "tsc",
-    "red-team": "tsx src/red-team/runRedTeam.ts",
-    "start": "node dist/demo.js"
+    "dev": "tsx src/cli/index.ts",
+    "build": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\" && tsc",
+    "check": "tsx src/cli/index.ts",
+    "start": "node dist/cli/index.js",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "prepublishOnly": "npm run build && npm test"
   },
   "devDependencies": {
     "@types/node": "^24.6.0",

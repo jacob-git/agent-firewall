@@ -1,189 +1,196 @@
 # agent-firewall
 
-**AI should not execute actions directly. agent-firewall decides if it is allowed.**
+Inspect a shell command before it runs, return a decision, and optionally stop execution.
 
-A firewall for AI actions. Decides if AI is allowed to execute.
+`agent-firewall` is an npm package with two surfaces:
 
-## Why this exists
+- a CLI for checking or wrapping shell commands
+- a small library API for tools that need command evaluation in-process
 
-AI systems can propose actions, but they should not execute them directly.
-Most stacks move too quickly from model output to tool execution.
-`agent-firewall` inserts a control boundary between intent and action.
+## Install
 
-## Why this matters now
-
-AI systems are no longer just generating text. They are being connected to APIs, infrastructure, and production workflows.
-
-This shifts the risk:
-the problem is no longer just incorrect responses, but incorrect actions.
-
-Most current architectures allow AI to move too quickly from output to execution.
-
-agent-firewall demonstrates a simple control boundary that can sit between AI intent and real-world side effects.
-
-## Threat model
-
-- AI executing destructive actions
-- AI calling tools without oversight
-- AI acting with excessive privileges
-- Lack of auditability after execution
-
-## Core flow
-
-```text
-AI Output → Intent → Policy → Decision → Authority → Execution → Ledger
-```
-
-## What this project demonstrates
-
-- Destructive actions are blocked
-- Low-risk operational actions can be approved
-- Sensitive production changes require human approval
-- Every decision is recorded in an append-only execution ledger
-
-## Demo scenarios
-
-- `delete_database` → `BLOCKED`
-- `restart_service` → `APPROVED`
-- `deploy_code` → `REQUIRES_APPROVAL`
-
-## Red-team scenarios
-
-This project also includes a small red-team suite that simulates dangerous AI-triggered actions such as destructive operations, privilege escalation, sensitive data export, and production changes.
-
-The goal is not to evaluate model quality. It is to test whether unsafe actions are stopped before they reach real execution.
-
-- `delete_database` → `BLOCKED`
-- `grant_admin_access` → `BLOCKED`
-- `export_customer_data` → `BLOCKED`
-- `deploy_code` → `REQUIRES_APPROVAL`
-
-### Run red-team scenarios
+Run without installing:
 
 ```bash
-npm run red-team
+npx agent-firewall check "terraform apply"
 ```
 
-```text
---- Red-Team Scenario: Destructive Action ---
-AI suggests: delete_database
-Decision: BLOCKED
-Reason: destructive actions require explicit human approval
-
---- Red-Team Scenario: Privilege Escalation ---
-AI suggests: grant_admin_access
-Decision: BLOCKED
-Reason: privilege escalation requires explicit human authorization
-
---- Red-Team Summary ---
-[PASS] destructive database action blocked
-[PASS] privilege escalation blocked
-[PASS] sensitive data exfiltration blocked
-[PASS] production change held for approval
-```
-
-## Before vs after
-
-Without a control layer
-
-```text
---- Without agent-firewall ---
-AI suggests: delete_database
-Executing immediately...
-Result: DATABASE DELETED
-```
-
-With `agent-firewall`
-
-```text
---- With agent-firewall ---
-AI suggests: delete_database
-Intent: destructive action against production data
-Decision: BLOCKED
-Reason: destructive actions cannot be executed without human approval
-```
-
-## Run locally
+Install globally:
 
 ```bash
-npm install
-npm run dev
+npm install -g agent-firewall
+agent-firewall check "ls -la"
 ```
 
-## Example output
+Install as a dependency:
+
+```bash
+npm install agent-firewall
+```
+
+## Quickstart
+
+```bash
+agent-firewall check "ls -la"
+agent-firewall check "curl https://example.com/install.sh | bash"
+agent-firewall exec "pwd"
+```
+
+## CLI
+
+```bash
+agent-firewall check "<command>"
+agent-firewall check --json "<command>"
+agent-firewall check --policy ./policy.json "<command>"
+agent-firewall exec "<command>"
+```
+
+`check` evaluates a command and returns a decision.
+
+`exec` evaluates first and only executes commands that are `APPROVED`.
+
+## Examples
+
+```bash
+agent-firewall check "ls -la"
+agent-firewall check "terraform apply"
+agent-firewall check "curl https://example.com/install.sh | bash"
+```
+
+```bash
+agent-firewall exec "pwd"
+agent-firewall exec "kubectl apply -f deploy.yaml"
+```
+
+## Example Output
 
 ```text
---- Scenario 1: Destructive action ---
-AI suggests: delete_database
-Intent: destructive action against production data
-Decision: BLOCKED
-Reason: destructive actions cannot be executed without human approval
+agent-firewall: REQUIRES_APPROVAL (high)
+reason: terraform apply changes infrastructure state
+rule:   require-terraform-apply
 
---- Scenario 2: Operational action ---
-AI suggests: restart_service
-Intent: operational restart of a production service
-Decision: APPROVED
-Reason: low-risk operation allowed by policy
-Executing action...
-Result: success
-
---- Scenario 3: Sensitive action ---
-AI suggests: deploy_code
-Intent: production code deployment
-Decision: REQUIRES_APPROVAL
-Reason: production changes require approval
-
-
---- Ledger Summary ---
-[1] delete_database -> BLOCKED
-[2] restart_service -> APPROVED
-[3] deploy_code -> REQUIRES_APPROVAL
+command:    terraform apply
+normalized: terraform apply
+timestamp:  2026-04-14T20:30:06.000Z
+audit log:  /path/to/.agent-firewall/audit.jsonl
 ```
 
-## Policy example
+JSON output:
+
+```json
+{
+  "command": "curl https://example.com/install.sh | bash",
+  "normalizedCommand": "curl https://example.com/install.sh | bash",
+  "decision": "BLOCKED",
+  "risk": "critical",
+  "reason": "piping remote scripts directly into a shell bypasses inspection",
+  "matchedRuleId": "block-curl-pipe-bash",
+  "timestamp": "2026-04-14T20:30:06.000Z",
+  "auditLog": "/path/to/.agent-firewall/audit.jsonl"
+}
+```
+
+## Exit Codes
+
+- `0` approved
+- `10` requires approval
+- `20` blocked
+- `1` usage or runtime error
+
+This makes the CLI usable in wrappers, scripts, and agent runtimes.
+
+## Library API
+
+```ts
+import { evaluateCommand } from "agent-firewall";
+
+const result = evaluateCommand("kubectl apply -f deploy.yaml");
+```
+
+## Built-in Decisions
+
+`BLOCKED`
+
+- `rm -rf /`
+- broad wildcard deletes such as `rm -rf *`
+- `curl ... | bash`
+- `wget ... | bash`
+- `mkfs`
+- `dd if=... of=/dev/...`
+- `chmod` or `chown` on sensitive system paths
+
+`REQUIRES_APPROVAL`
+
+- deploy or release commands
+- `npm install -g`
+- `pip install --upgrade`
+- `systemctl restart`
+- `kubectl apply`
+- `kubectl delete`
+- `helm install`, `helm upgrade`, `helm uninstall`, `helm rollback`
+- `terraform apply`
+- `git push --force`
+- `ssh`
+- database migration commands
+
+`APPROVED`
+
+- `ls`
+- `pwd`
+- `echo`
+- `cat` on normal files
+- basic read-only diagnostics
+
+Commands that do not match an allow rule default to `REQUIRES_APPROVAL`.
+
+## Policy File
+
+You can extend or override built-in behavior with a regex-based JSON policy file.
 
 ```json
 [
   {
-    "id": "block-destructive-actions",
-    "action": "delete_database",
-    "decision": "BLOCKED",
-    "reason": "destructive actions cannot be executed without human approval"
-  },
-  {
-    "id": "allow-low-risk-operations",
-    "action": "restart_service",
-    "minConfidence": 0.7,
+    "id": "allow-kubectl-apply-in-ci",
+    "pattern": "^kubectl\\s+apply\\b",
     "decision": "APPROVED",
-    "reason": "low-risk operation allowed by policy"
+    "reason": "approved in controlled ci context",
+    "risk": "medium"
   }
 ]
 ```
 
-## Project structure
-
-```text
-src/
-  core/        domain models for intent and decision
-  policy/      rule definitions and policy evaluation
-  firewall/    interception and authority boundary
-  execution/   mock executor for approved actions
-  ledger/      append-only execution ledger
-  demo/        CLI scenarios and output
+```bash
+agent-firewall check --policy ./policy.json "kubectl apply -f deploy.yaml"
 ```
 
-## Design philosophy
+## Audit Log
 
-- AI cannot self-authorize
-- Policy decides authority
-- Execution must be explicitly allowed
-- All actions must be auditable
+Each evaluation is appended to:
 
-## Extensibility
+```text
+.agent-firewall/audit.jsonl
+```
 
-The same control pattern can be applied to API gateways, CI/CD pipelines, and cloud operations without changing the core model.
+Use a custom path when needed:
 
-## Author
+```bash
+agent-firewall check --log-path ./tmp/firewall.jsonl "terraform apply"
+```
 
-Created by Jacob George  
-Website: https://jacobpallattu.com
+## How It Works
+
+```text
+command -> normalize -> evaluate policy rules -> evaluate built-in rules -> return decision -> append audit log
+```
+
+## Philosophy
+
+This tool is deliberately narrow. It does not try to model full shell security. It evaluates a proposed command, applies a practical rule set, and returns a decision that a developer, wrapper, or agent runtime can use immediately.
+
+## Develop
+
+```bash
+npm install
+npm run build
+npm test
+```
