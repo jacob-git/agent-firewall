@@ -194,3 +194,15 @@ npm install
 npm run build
 npm test
 ```
+
+## Release
+
+This package is set up for npm Trusted Publishing through GitHub Actions.
+
+Release path:
+
+1. Configure npm Trusted Publishing for `@pallattu/agent-firewall`
+2. Push a tag such as `v0.1.0`
+3. Let `.github/workflows/publish.yml` build, test, and publish the package
+
+See [RELEASING.md](RELEASING.md) for the exact setup values and release steps.
