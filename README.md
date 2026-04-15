@@ -197,8 +197,6 @@ npm test
 
 ## Release
 
-This package is set up to publish through GitHub Actions using an npm token stored in repository secrets.
-
 Release path:
 
 1. Add `NPM_TOKEN` to GitHub Actions secrets
