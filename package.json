@@ -1,5 +1,5 @@
 {
-  "name": "agent-firewall",
+  "name": "@pallattu/agent-firewall",
   "version": "0.1.0",
   "description": "CLI policy boundary for AI-generated shell commands.",
   "type": "module",

@@ -12,20 +12,20 @@ Inspect a shell command before it runs, return a decision, and optionally stop e
 Run without installing:
 
 ```bash
-npx agent-firewall check "terraform apply"
+npx @pallattu/agent-firewall check "terraform apply"
 ```
 
 Install globally:
 
 ```bash
-npm install -g agent-firewall
+npm install -g @pallattu/agent-firewall
 agent-firewall check "ls -la"
 ```
 
 Install as a dependency:
 
 ```bash
-npm install agent-firewall
+npm install @pallattu/agent-firewall
 ```
 
 ## Quickstart
@@ -102,7 +102,7 @@ This makes the CLI usable in wrappers, scripts, and agent runtimes.
 ## Library API
 
 ```ts
-import { evaluateCommand } from "agent-firewall";
+import { evaluateCommand } from "@pallattu/agent-firewall";
 
 const result = evaluateCommand("kubectl apply -f deploy.yaml");
 ```
