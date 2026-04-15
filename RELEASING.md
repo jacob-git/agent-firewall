@@ -1,29 +1,21 @@
 # Releasing
 
-## Trusted Publishing Setup
+## GitHub Actions Publish Setup
 
-Trusted Publishing removes the need for a long-lived npm publish token by allowing npm to trust a specific GitHub Actions workflow through OIDC.
+This repository is configured to publish through GitHub Actions using an npm token stored as a repository secret.
 
-For this repository, configure npm trusted publishing with:
-
-- Organization or user: `jacob-git`
-- Repository: `agent-firewall`
-- Workflow filename: `publish.yml`
-- Environment name: leave empty unless you later add a protected GitHub environment
-
-The workflow file already exists at:
+The workflow file is:
 
 ```text
 .github/workflows/publish.yml
 ```
 
-## npm Configuration Steps
+## GitHub Configuration Steps
 
-1. Open the package settings for `@pallattu/agent-firewall` on npmjs.com.
-2. Go to the Trusted publishing section.
-3. Add a GitHub Actions trusted publisher with the values above.
-4. Save the configuration.
-5. After the first successful trusted publish, consider restricting token-based publishing for the package.
+1. Open the `agent-firewall` repository on GitHub.
+2. Go to `Settings` -> `Secrets and variables` -> `Actions`.
+3. Add a new repository secret named `NPM_TOKEN`.
+4. Use an npm token that can publish `@pallattu/agent-firewall`.
 
 ## Release Flow
 
@@ -75,8 +67,7 @@ rm agent-firewall-0.1.0.tgz
 
 ## Notes
 
-- Trusted publishing requires the workflow filename on npmjs.com to match `publish.yml` exactly.
-- Trusted publishing for npm requires GitHub-hosted runners.
+- GitHub Actions publishing requires the `NPM_TOKEN` secret to exist in the repository.
 - `prepublishOnly` already runs build and test before publish.
 - The package is configured to publish only `dist`, `README.md`, and `LICENSE`.
-- If you later add private dependencies, install them in the workflow with a separate read-only npm token. Trusted publishing only replaces publish authentication.
+- If you later add private dependencies, install them in the workflow with a separate read-only npm token. `NPM_TOKEN` should remain dedicated to publishing.

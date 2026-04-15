@@ -197,11 +197,11 @@ npm test
 
 ## Release
 
-This package is set up for npm Trusted Publishing through GitHub Actions.
+This package is set up to publish through GitHub Actions using an npm token stored in repository secrets.
 
 Release path:
 
-1. Configure npm Trusted Publishing for `@pallattu/agent-firewall`
+1. Add `NPM_TOKEN` to GitHub Actions secrets
 2. Push a tag such as `v0.1.0`
 3. Let `.github/workflows/publish.yml` build, test, and publish the package
 
